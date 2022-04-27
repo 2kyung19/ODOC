@@ -1,0 +1,110 @@
+import java.util.*;
+import java.io.*;
+
+// 트리에서 하나의 Node에 해당하는 클래스
+class Node {
+    char data;
+    Node left;
+    Node right;
+
+    // 노드에 값이 할당되어 처리되므로 생성자를 통해 노드 data 선언
+    Node(char data) {
+        this.data = data;
+    }
+}
+
+// 노드를 이어서 트리로 표현하기 위해 만든 클래스
+class Tree {
+    // 루트 노드 먼저 확인
+    public Node root;
+
+    // 노드 생성, 노드는 왼쪽 노드 오른쪽 노드가 있으므로 좌우값을 체크해서 노드로 생성함
+    public void createNode(char data, char leftData, char rightData) {
+        // root가 없는 초기 상태라면 루트 노드 생성함
+        if (root == null) {
+            root = new Node(data);
+
+            // 좌우 값이 있는 경우에 노드 생성하여 할당
+            if (leftData != '.') {
+                root.left = new Node(leftData);
+            }
+            if (rightData != '.') {
+                root.right = new Node(rightData);
+            }
+        } else {
+            // 초기 상태가 아니면 루트 노드 이후 어디로 들어가야 할 지 찾음
+            searchNode(root, data, leftData, rightData);
+        }
+    }
+
+    // root 노드가 아닐 경우 들어갈 자리 탐색을 위해 노드 탐색후 노드 연결함
+    public void searchNode(Node root, char data, char leftData, char rightData) {
+        if (root == null) {
+            // 도착한 노드가 null이면 재귀 종료, 넣을 노드가 없는 것이므로
+            return;
+        } else if (root.data == data) {
+            // 들어갈 위치가 있다면 입력받은 root.data가 data면
+            // 값이 있는 경우 노드 생성해서 할당
+            if (leftData != '.') {
+                root.left = new Node(leftData);
+            }
+            if (rightData != '.') {
+                root.right = new Node(rightData);
+            }
+        } else {
+            // 위에서 노드가 null인 경우와 root인 경우를 제외하고 들어갈 위치를 더 탐색하기 위해서 root 기준 왼쪽, 오른쪽에서 찾아서 연결(재귀로 구현)
+            searchNode(root.left, data, leftData, rightData);
+            searchNode(root.right, data, leftData, rightData);
+        }
+    }
+
+    // 전위 순회 : 루트 -> 좌 -> 우
+    public void preorder(Node root) {
+        System.out.print(root.data);
+        if (root.left != null) preorder(root.left);
+        if (root.right != null) preorder(root.right);
+    }
+
+    // 중위 순회 : 좌 -> 루트 -> 우
+    public void inorder(Node root) {
+        if (root.left != null) inorder(root.left);
+        System.out.print(root.data);
+        if (root.right != null) inorder(root.right);
+    }
+
+    // 후위 순회 : 좌 -> 우 -> 루트
+    public void postorder(Node root) {
+        if (root.left != null) postorder(root.left);
+        if (root.right != null) postorder(root.right);
+        System.out.print(root.data);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+
+        // 앞서 선언한 트리 인스턴스화
+        Tree tree = new Tree();
+
+        // N 만큼 root, left, right 값 입력받고 createNode로 Tree 생성
+        for (int i = 0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            char root = st.nextToken().charAt(0);
+            char left = st.nextToken().charAt(0);
+            char right = st.nextToken().charAt(0);
+
+            tree.createNode(root, left, right);
+        }
+
+        // 각각 순회별로 진행
+        tree.preorder(tree.root);
+        System.out.println();
+        tree.inorder(tree.root);
+        System.out.println();
+        tree.postorder(tree.root);
+    }
+
+}
